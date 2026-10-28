@@ -1,0 +1,665 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>高校 成績管理 Pro</title>
+<style>
+*{box-sizing:border-box}
+body{
+ margin:0;padding:15px;background:#f1f5f9;
+ color:#1e293b;font-family:system-ui,sans-serif;
+}
+main{max-width:950px;margin:auto}
+h1{text-align:center;color:#2563eb}
+.card{
+ background:white;border-radius:15px;padding:20px;
+ margin:16px 0;box-shadow:0 3px 12px #0000000a;
+}
+input,select,button{
+ font:inherit;padding:11px;border-radius:8px;
+}
+input:not([type=checkbox]),select{
+ width:100%;border:1px solid #cbd5e1;
+}
+label{display:block;margin:10px 0}
+button{
+ background:#2563eb;color:white;border:0;
+ cursor:pointer;
+}
+button:hover{opacity:.85}
+button:focus-visible,input:focus-visible,
+select:focus-visible{outline:3px solid #93c5fd}
+.full{width:100%;margin-top:10px}
+.gray{background:#64748b}
+.red{background:#dc2626}
+.green{background:#0d9488}
+.hidden{display:none}
+.muted{color:#64748b;font-size:14px}
+.subjects{
+ display:grid;grid-template-columns:repeat(2,1fr);
+ gap:8px;
+}
+.subjects label{
+ background:#f1f5f9;padding:12px;
+ border-radius:8px;margin:0;
+}
+.score-card{
+ background:#f8fafc;border:1px solid #e2e8f0;
+ padding:14px;border-radius:10px;margin:12px 0;
+}
+.score-grid{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:10px;
+}
+.score-grid label{font-size:14px}
+.summary{
+ display:grid;grid-template-columns:repeat(3,1fr);
+ gap:10px;
+}
+.stat{
+ background:#eff6ff;text-align:center;
+ padding:15px;border-radius:10px;
+}
+.stat strong{
+ display:block;font-size:24px;
+ color:#2563eb;overflow-wrap:anywhere;
+}
+.compare{
+ border-bottom:1px solid #ddd;
+ padding:15px 0;
+}
+.bar-row{margin:9px 0}
+.bar{
+ height:13px;background:#e2e8f0;
+ border-radius:20px;overflow:hidden;margin-top:4px;
+}
+.fill{height:100%;border-radius:20px}
+.mine{background:#2563eb}
+.classavg{background:#16a34a}
+.gradeavg{background:#f97316}
+.positive{color:#15803d}
+.negative{color:#dc2626}
+.actions{display:flex;gap:8px}
+.actions button{flex:1}
+.record{padding:15px 0;border-bottom:1px solid #ddd}
+@media(max-width:600px){
+ body{padding:8px}
+ .card{padding:14px}
+ .subjects{grid-template-columns:1fr}
+ .score-grid{grid-template-columns:1fr;gap:0}
+ .summary{grid-template-columns:1fr}
+}
+</style>
+</head>
+<body>
+<main>
+
+<h1>📚 高校 成績管理 Pro</h1>
+
+<section class="card">
+<h2 id="formTitle">テストを登録</h2>
+
+<form id="form">
+
+<label for="year">年度</label>
+<input id="year" type="number"
+ min="2000" max="2100" required>
+
+<label for="term">テスト名</label>
+<select id="term">
+<option>1学期中間</option>
+<option>1学期期末</option>
+<option>2学期中間</option>
+<option>2学期期末</option>
+<option>3学期中間</option>
+<option>3学期期末</option>
+</select>
+
+<h3>① 受験科目を選択</h3>
+<p class="muted">
+受験しなかった科目はチェックを外してください。
+</p>
+
+<div id="subjects" class="subjects"></div>
+
+<button type="button" class="gray full"
+ id="allBtn">すべて選択</button>
+<button type="button" class="gray full"
+ id="noneBtn">すべて解除</button>
+
+<h3>② 点数を入力</h3>
+<p class="muted">
+クラス平均・学年平均は後から入力してもOKです。
+</p>
+
+<div id="scoreInputs"></div>
+
+<button class="full" type="submit" id="saveBtn">
+記録する
+</button>
+<button class="gray full hidden"
+ type="button" id="cancelBtn">
+編集をキャンセル
+</button>
+
+</form>
+</section>
+
+<section class="card">
+<h2>📊 成績比較</h2>
+
+<label for="resultSelect">表示するテスト</label>
+<select id="resultSelect"></select>
+
+<div class="summary">
+<div class="stat">
+自分の合計
+<strong id="total">—</strong>
+<small id="maxScore"></small>
+</div>
+<div class="stat">
+自分の平均
+<strong id="average">—</strong>
+<small id="subjectCount"></small>
+</div>
+<div class="stat">
+比較できる科目
+<strong id="compareCount">—</strong>
+<small>平均点の入力済み科目数</small>
+</div>
+</div>
+
+<div id="comparison"></div>
+</section>
+
+<section class="card">
+<h2>📋 過去のテスト</h2>
+<div id="history"></div>
+</section>
+
+</main>
+
+<script>
+const KEY="highschool-scores-v2";
+const OLD_KEY="highschool-scores-v1";
+
+const subjects=[
+ "文学国語","論理国語","英コミュ",
+ "古典探究","数Ⅱ","日本史",
+ "世界史","公共","化学","情報",
+ "保健","論理表現Ⅱ"
+];
+
+const $=id=>document.getElementById(id);
+const has=(obj,key)=>
+ Object.prototype.hasOwnProperty.call(obj,key);
+
+let records=load();
+let editingId=null;
+
+function load(){
+ try{
+  const current=localStorage.getItem(KEY);
+  if(current!==null){
+   const data=JSON.parse(current);
+   return Array.isArray(data)?data:[];
+  }
+
+  // 以前の高校版の記録を引き継ぐ
+  const old=JSON.parse(
+   localStorage.getItem(OLD_KEY)||"[]"
+  );
+
+  if(!Array.isArray(old))return [];
+
+  return old.map(r=>({
+   ...r,
+   classAvgs:{},
+   gradeAvgs:{}
+  }));
+ }catch{
+  return [];
+ }
+}
+
+function save(){
+ try{
+  localStorage.setItem(KEY,JSON.stringify(records));
+  return true;
+ }catch{
+  alert("保存に失敗しました。");
+  return false;
+ }
+}
+
+function format(n){
+ return Number(n).toFixed(1).replace(/\.0$/,"");
+}
+
+// 科目選択欄
+subjects.forEach(subject=>{
+ const label=document.createElement("label");
+ const check=document.createElement("input");
+
+ check.type="checkbox";
+ check.value=subject;
+ check.addEventListener("change",renderInputs);
+
+ label.append(check,document.createTextNode(subject));
+ $("subjects").append(label);
+});
+
+function checks(){
+ return [...$("subjects").querySelectorAll("input")];
+}
+
+function makeInput(subject,kind,labelText,required){
+ const label=document.createElement("label");
+ label.textContent=labelText;
+
+ const input=document.createElement("input");
+ input.type="number";
+ input.min=0;
+ input.max=100;
+ input.step=kind==="mine"?"1":"0.1";
+ input.placeholder=required?"0〜100":"未発表なら空欄";
+ input.required=required;
+ input.dataset.subject=subject;
+ input.dataset.kind=kind;
+
+ label.append(input);
+ return label;
+}
+
+function renderInputs(){
+ const box=$("scoreInputs");
+ const previous={};
+
+ box.querySelectorAll("input").forEach(input=>{
+  const key=input.dataset.subject+"|"+input.dataset.kind;
+  previous[key]=input.value;
+ });
+
+ box.replaceChildren();
+
+ checks().filter(c=>c.checked).forEach(check=>{
+  const subject=check.value;
+
+  const card=document.createElement("div");
+  card.className="score-card";
+
+  const title=document.createElement("h3");
+  title.textContent=subject;
+
+  const grid=document.createElement("div");
+  grid.className="score-grid";
+
+  [
+   ["mine","自分の点数",true],
+   ["class","クラス平均",false],
+   ["grade","学年平均",false]
+  ].forEach(([kind,text,required])=>{
+   const label=makeInput(subject,kind,text,required);
+   const input=label.querySelector("input");
+   const key=subject+"|"+kind;
+
+   if(has(previous,key)){
+    input.value=previous[key];
+   }
+
+   grid.append(label);
+  });
+
+  card.append(title,grid);
+  box.append(card);
+ });
+}
+
+$("allBtn").onclick=()=>{
+ checks().forEach(c=>c.checked=true);
+ renderInputs();
+};
+
+$("noneBtn").onclick=()=>{
+ checks().forEach(c=>c.checked=false);
+ renderInputs();
+};
+
+$("year").value=new Date().getFullYear();
+
+function readValue(subject,kind,required){
+ const input=[...$("scoreInputs").querySelectorAll("input")]
+  .find(i=>i.dataset.subject===subject &&
+           i.dataset.kind===kind);
+
+ if(!input)return {valid:false};
+
+ if(input.value.trim()===""){
+  return {valid:!required,value:null};
+ }
+
+ const value=Number(input.value);
+ const valid=Number.isFinite(value) &&
+  value>=0 && value<=100 &&
+  (kind!=="mine" || Number.isInteger(value)) &&
+  Math.round(value*10)===value*10;
+
+ return {valid,value};
+}
+
+// 登録・編集
+$("form").addEventListener("submit",event=>{
+ event.preventDefault();
+
+ const selected=checks().filter(c=>c.checked);
+
+ if(selected.length===0){
+  alert("科目を1つ以上選択してください。");
+  return;
+ }
+
+ const scores={};
+ const classAvgs={};
+ const gradeAvgs={};
+
+ for(const check of selected){
+  const subject=check.value;
+
+  const mine=readValue(subject,"mine",true);
+  const classAvg=readValue(subject,"class",false);
+  const gradeAvg=readValue(subject,"grade",false);
+
+  if(!mine.valid||!classAvg.valid||!gradeAvg.valid){
+   alert(subject+"の点数を確認してください。");
+   return;
+  }
+
+  scores[subject]=mine.value;
+
+  if(classAvg.value!==null){
+   classAvgs[subject]=classAvg.value;
+  }
+
+  if(gradeAvg.value!==null){
+   gradeAvgs[subject]=gradeAvg.value;
+  }
+ }
+
+ const year=Number($("year").value);
+
+ if(!Number.isInteger(year)||year<2000||year>2100){
+  alert("年度を確認してください。");
+  return;
+ }
+
+ const record={
+  id:editingId||crypto.randomUUID(),
+  year,
+  term:$("term").value,
+  scores,classAvgs,gradeAvgs
+ };
+
+ const previous=records;
+
+ if(editingId){
+  records=records.map(r=>
+   r.id===editingId?record:r
+  );
+ }else{
+  records=[...records,record];
+ }
+
+ if(!save()){
+  records=previous;
+  return;
+ }
+
+ resetForm();
+ render(record.id);
+});
+
+// 編集
+function editRecord(id){
+ const record=records.find(r=>r.id===id);
+ if(!record)return;
+
+ editingId=id;
+ $("year").value=record.year;
+ $("term").value=record.term;
+
+ checks().forEach(check=>{
+  check.checked=has(record.scores,check.value);
+ });
+
+ renderInputs();
+
+ $("scoreInputs").querySelectorAll("input").forEach(input=>{
+  const subject=input.dataset.subject;
+  const kind=input.dataset.kind;
+
+  const source=kind==="mine"
+   ?record.scores
+   :kind==="class"
+    ?record.classAvgs||{}
+    :record.gradeAvgs||{};
+
+  input.value=has(source,subject)?source[subject]:"";
+ });
+
+ $("formTitle").textContent="📝 成績を編集";
+ $("saveBtn").textContent="変更を保存";
+ $("cancelBtn").classList.remove("hidden");
+
+ $("form").scrollIntoView({behavior:"smooth"});
+}
+
+function resetForm(){
+ editingId=null;
+ $("form").reset();
+ $("year").value=new Date().getFullYear();
+
+ checks().forEach(c=>c.checked=false);
+ renderInputs();
+
+ $("formTitle").textContent="テストを登録";
+ $("saveBtn").textContent="記録する";
+ $("cancelBtn").classList.add("hidden");
+}
+
+$("cancelBtn").onclick=resetForm;
+
+// 削除
+function deleteRecord(id){
+ if(!confirm("この記録を削除しますか？"))return;
+
+ const previous=records;
+ records=records.filter(r=>r.id!==id);
+
+ if(!save()){
+  records=previous;
+  return;
+ }
+
+ if(editingId===id)resetForm();
+ render();
+}
+
+// 差の表示
+function difference(mine,avg){
+ if(avg===undefined||avg===null)return "未入力";
+
+ const diff=Math.round((mine-avg)*10)/10;
+
+ if(diff>0)return "+"+format(diff)+"点";
+ if(diff<0)return format(diff)+"点";
+ return "±0点";
+}
+
+// 棒グラフの1行
+function makeBar(label,value,cssClass){
+ const row=document.createElement("div");
+ row.className="bar-row";
+
+ const text=document.createElement("div");
+ text.textContent=label+"："+
+  (value===undefined||value===null
+   ?"未入力":format(value)+"点");
+
+ row.append(text);
+
+ if(value!==undefined&&value!==null){
+  const bar=document.createElement("div");
+  bar.className="bar";
+
+  const fill=document.createElement("div");
+  fill.className="fill "+cssClass;
+  fill.style.width=value+"%";
+
+  bar.append(fill);
+  row.append(bar);
+ }
+
+ return row;
+}
+
+// 比較結果
+function showComparison(id){
+ const box=$("comparison");
+ box.replaceChildren();
+
+ const record=records.find(r=>r.id===id);
+
+ if(!record){
+  $("total").textContent="—";
+  $("average").textContent="—";
+  $("maxScore").textContent="";
+  $("subjectCount").textContent="";
+  $("compareCount").textContent="—";
+  box.textContent="まだ記録がありません。";
+  return;
+ }
+
+ const values=Object.values(record.scores);
+ const total=values.reduce((a,b)=>a+b,0);
+ const count=values.length;
+
+ $("total").textContent=total+"点";
+ $("maxScore").textContent="/ "+count*100+"点";
+ $("average").textContent=format(total/count)+"点";
+ $("subjectCount").textContent=count+"科目";
+ 
+ const classAvgs=record.classAvgs||{};
+ const gradeAvgs=record.gradeAvgs||{};
+
+ const compared=subjects.filter(s=>
+  has(record.scores,s)&&
+  has(classAvgs,s)&&
+  has(gradeAvgs,s)
+ ).length;
+
+ $("compareCount").textContent=compared+"科目";
+
+ subjects.forEach(subject=>{
+  if(!has(record.scores,subject))return;
+
+  const mine=record.scores[subject];
+  const cls=classAvgs[subject];
+  const grade=gradeAvgs[subject];
+
+  const section=document.createElement("section");
+  section.className="compare";
+
+  const title=document.createElement("h3");
+  title.textContent=subject;
+
+  section.append(title);
+  section.append(
+   makeBar("自分",mine,"mine"),
+   makeBar("クラス平均",cls,"classavg"),
+   makeBar("学年平均",grade,"gradeavg")
+  );
+
+  const diff=document.createElement("p");
+  diff.textContent=
+   "クラス平均との差："+difference(mine,cls)+
+   " / 学年平均との差："+difference(mine,grade);
+
+  section.append(diff);
+  box.append(section);
+ });
+}
+
+// 履歴
+function render(selectedId=null){
+ const select=$("resultSelect");
+ const previousId=selectedId||select.value;
+
+ select.replaceChildren();
+
+ records.forEach(r=>{
+  const option=document.createElement("option");
+  option.value=r.id;
+  option.textContent=r.year+"年度 "+r.term;
+  select.append(option);
+ });
+
+ const id=records.some(r=>r.id===previousId)
+  ?previousId
+  :records.length?records[records.length-1].id:"";
+
+ select.value=id;
+ showComparison(id);
+
+ const history=$("history");
+ history.replaceChildren();
+
+ if(records.length===0){
+  history.textContent="まだ記録がありません。";
+  return;
+ }
+
+ [...records].reverse().forEach(r=>{
+  const div=document.createElement("div");
+  div.className="record";
+
+  const title=document.createElement("h3");
+  title.textContent=r.year+"年度 "+r.term;
+
+  const values=Object.values(r.scores);
+  const total=values.reduce((a,b)=>a+b,0);
+
+  const detail=document.createElement("p");
+  detail.textContent=
+   values.length+"科目 / 合計"+total+
+   "点 / 平均"+format(total/values.length)+"点";
+
+  const actions=document.createElement("div");
+  actions.className="actions";
+
+  const edit=document.createElement("button");
+  edit.textContent="編集";
+  edit.className="green";
+  edit.onclick=()=>editRecord(r.id);
+
+  const del=document.createElement("button");
+  del.textContent="削除";
+  del.className="red";
+  del.onclick=()=>deleteRecord(r.id);
+
+  actions.append(edit,del);
+  div.append(title,detail,actions);
+  history.append(div);
+ });
+}
+
+$("resultSelect").addEventListener("change",e=>{
+ showComparison(e.target.value);
+});
+
+renderInputs();
+render();
+</script>
+</body>
+</html>
