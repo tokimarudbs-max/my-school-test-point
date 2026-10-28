@@ -4,101 +4,194 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<title>高校 成績管理 Pro</title>
+<title>高校 成績管理</title>
+
 <style>
 *{box-sizing:border-box}
+
 body{
- margin:0;padding:15px;background:#f1f5f9;
- color:#1e293b;font-family:system-ui,sans-serif;
+ margin:0;
+ padding:14px;
+ background:#f1f5f9;
+ color:#1e293b;
+ font-family:system-ui,sans-serif;
 }
+
 main{max-width:950px;margin:auto}
+
 h1{text-align:center;color:#2563eb}
+
 .card{
- background:white;border-radius:15px;padding:20px;
- margin:16px 0;box-shadow:0 3px 12px #0000000a;
+ background:white;
+ padding:20px;
+ margin:16px 0;
+ border-radius:15px;
+ box-shadow:0 3px 12px #0000000a;
 }
-input,select,button{
- font:inherit;padding:11px;border-radius:8px;
-}
-input:not([type=checkbox]),select{
- width:100%;border:1px solid #cbd5e1;
-}
+
 label{display:block;margin:10px 0}
+
+input,select,button{
+ font:inherit;
+ padding:10px;
+ border-radius:8px;
+}
+
+input:not([type=checkbox]),select{
+ width:100%;
+ border:1px solid #cbd5e1;
+}
+
 button{
- background:#2563eb;color:white;border:0;
+ border:0;
+ background:#2563eb;
+ color:white;
  cursor:pointer;
 }
-button:hover{opacity:.85}
-button:focus-visible,input:focus-visible,
-select:focus-visible{outline:3px solid #93c5fd}
+
+button:hover{opacity:.88}
+
+button:focus-visible,
+input:focus-visible,
+select:focus-visible{
+ outline:3px solid #93c5fd;
+}
+
 .full{width:100%;margin-top:10px}
 .gray{background:#64748b}
-.red{background:#dc2626}
 .green{background:#0d9488}
+.red{background:#dc2626}
 .hidden{display:none}
-.muted{color:#64748b;font-size:14px}
+
+.muted{
+ font-size:14px;
+ color:#64748b;
+ line-height:1.7;
+}
+
 .subjects{
- display:grid;grid-template-columns:repeat(2,1fr);
+ display:grid;
+ grid-template-columns:repeat(2,1fr);
  gap:8px;
 }
+
 .subjects label{
- background:#f1f5f9;padding:12px;
- border-radius:8px;margin:0;
+ margin:0;
+ padding:12px;
+ border-radius:8px;
+ background:#f1f5f9;
+ cursor:pointer;
 }
+
+.subjects input{margin-right:8px}
+
 .score-card{
- background:#f8fafc;border:1px solid #e2e8f0;
- padding:14px;border-radius:10px;margin:12px 0;
+ margin:12px 0;
+ padding:14px;
+ background:#f8fafc;
+ border:1px solid #e2e8f0;
+ border-radius:10px;
 }
+
+.score-card h3{margin:0}
+
 .score-grid{
- display:grid;grid-template-columns:repeat(3,1fr);
- gap:10px;
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
+ gap:12px;
 }
-.score-grid label{font-size:14px}
+
 .summary{
- display:grid;grid-template-columns:repeat(3,1fr);
+ display:grid;
+ grid-template-columns:repeat(3,1fr);
  gap:10px;
 }
+
 .stat{
- background:#eff6ff;text-align:center;
- padding:15px;border-radius:10px;
+ padding:15px;
+ text-align:center;
+ background:#eff6ff;
+ border-radius:10px;
 }
+
 .stat strong{
- display:block;font-size:24px;
- color:#2563eb;overflow-wrap:anywhere;
+ display:block;
+ font-size:24px;
+ color:#2563eb;
+ overflow-wrap:anywhere;
 }
+
 .compare{
- border-bottom:1px solid #ddd;
  padding:15px 0;
+ border-bottom:1px solid #e2e8f0;
 }
-.bar-row{margin:9px 0}
+
+.bar-row{margin:10px 0}
+
 .bar{
- height:13px;background:#e2e8f0;
- border-radius:20px;overflow:hidden;margin-top:4px;
+ height:14px;
+ margin-top:5px;
+ background:#e2e8f0;
+ border-radius:20px;
+ overflow:hidden;
 }
-.fill{height:100%;border-radius:20px}
+
+.fill{
+ height:100%;
+ border-radius:20px;
+}
+
 .mine{background:#2563eb}
 .classavg{background:#16a34a}
 .gradeavg{background:#f97316}
-.positive{color:#15803d}
-.negative{color:#dc2626}
-.actions{display:flex;gap:8px}
+
+.diff{
+ font-size:14px;
+ line-height:1.8;
+}
+
+.japanese-total{
+ background:#eff6ff;
+ border:2px solid #93c5fd;
+ padding:18px;
+ margin:20px 0;
+ border-radius:12px;
+}
+
+.japanese-total h3{
+ margin-top:0;
+ color:#1d4ed8;
+}
+
+.record{
+ padding:15px 0;
+ border-bottom:1px solid #e2e8f0;
+}
+
+.actions{
+ display:flex;
+ gap:8px;
+}
+
 .actions button{flex:1}
-.record{padding:15px 0;border-bottom:1px solid #ddd}
+
 @media(max-width:600px){
  body{padding:8px}
  .card{padding:14px}
- .subjects{grid-template-columns:1fr}
- .score-grid{grid-template-columns:1fr;gap:0}
- .summary{grid-template-columns:1fr}
+ .subjects,.score-grid,.summary{
+  grid-template-columns:1fr;
+ }
 }
 </style>
 </head>
+
 <body>
 <main>
 
-<h1>📚 高校 成績管理 Pro</h1>
+<h1>📚 高校 成績管理</h1>
 
 <section class="card">
+
 <h2 id="formTitle">テストを登録</h2>
 
 <form id="form">
@@ -108,6 +201,7 @@ select:focus-visible{outline:3px solid #93c5fd}
  min="2000" max="2100" required>
 
 <label for="term">テスト名</label>
+
 <select id="term">
 <option>1学期中間</option>
 <option>1学期期末</option>
@@ -117,30 +211,37 @@ select:focus-visible{outline:3px solid #93c5fd}
 <option>3学期期末</option>
 </select>
 
-<h3>① 受験科目を選択</h3>
+<h3>① 受験した科目を選択</h3>
+
 <p class="muted">
 受験しなかった科目はチェックを外してください。
 </p>
 
 <div id="subjects" class="subjects"></div>
 
-<button type="button" class="gray full"
- id="allBtn">すべて選択</button>
-<button type="button" class="gray full"
- id="noneBtn">すべて解除</button>
+<button type="button" class="gray full" id="allBtn">
+すべて選択
+</button>
+
+<button type="button" class="gray full" id="noneBtn">
+すべて解除
+</button>
 
 <h3>② 点数を入力</h3>
+
 <p class="muted">
-クラス平均・学年平均は後から入力してもOKです。
+文学国語・論理国語は各50点満点です。<br>
+両方受験した場合は、自動で国語合計（100点満点）を計算します。<br>
+クラス平均・学年平均は未発表なら空欄でも保存できます。
 </p>
 
 <div id="scoreInputs"></div>
 
-<button class="full" type="submit" id="saveBtn">
+<button type="submit" class="full" id="saveBtn">
 記録する
 </button>
-<button class="gray full hidden"
- type="button" id="cancelBtn">
+
+<button type="button" class="gray full hidden" id="cancelBtn">
 編集をキャンセル
 </button>
 
@@ -148,98 +249,152 @@ select:focus-visible{outline:3px solid #93c5fd}
 </section>
 
 <section class="card">
+
 <h2>📊 成績比較</h2>
 
 <label for="resultSelect">表示するテスト</label>
 <select id="resultSelect"></select>
 
 <div class="summary">
+
 <div class="stat">
 自分の合計
 <strong id="total">—</strong>
-<small id="maxScore"></small>
+<small id="maxTotal"></small>
 </div>
+
 <div class="stat">
-自分の平均
-<strong id="average">—</strong>
+得点率
+<strong id="percentage">—</strong>
 <small id="subjectCount"></small>
 </div>
+
 <div class="stat">
 比較できる科目
 <strong id="compareCount">—</strong>
-<small>平均点の入力済み科目数</small>
-</div>
+<small>両方の平均点が入力済み</small>
 </div>
 
+</div>
+
+<p class="muted">
+得点率＝合計得点 ÷ 合計満点 × 100<br>
+国語合計は総合点に二重加算されません。
+</p>
+
+<div id="japaneseResult"></div>
+
 <div id="comparison"></div>
+
 </section>
 
 <section class="card">
+
 <h2>📋 過去のテスト</h2>
+
 <div id="history"></div>
+
 </section>
 
 </main>
 
 <script>
-const KEY="highschool-scores-v2";
-const OLD_KEY="highschool-scores-v1";
 
-const subjects=[
- "文学国語","論理国語","英コミュ",
- "古典探究","数Ⅱ","日本史",
- "世界史","公共","化学","情報",
- "保健","論理表現Ⅱ"
+// 保存キー
+const KEY="highschool-scores-v3";
+
+const OLD_KEYS=[
+ "highschool-scores-v2",
+ "highschool-scores-v1"
 ];
 
+// 科目一覧
+const subjects=[
+ "文学国語",
+ "論理国語",
+ "英コミュ",
+ "古典探究",
+ "数Ⅱ",
+ "日本史",
+ "世界史",
+ "公共",
+ "化学",
+ "情報",
+ "保健",
+ "論理表現Ⅱ"
+];
+
+// 満点
+const maxScores={
+ "文学国語":50,
+ "論理国語":50
+};
+
 const $=id=>document.getElementById(id);
-const has=(obj,key)=>
- Object.prototype.hasOwnProperty.call(obj,key);
 
-let records=load();
-let editingId=null;
+function getMax(subject){
+ return maxScores[subject]??100;
+}
 
+function has(obj,key){
+ return Object.prototype.hasOwnProperty.call(obj,key);
+}
+
+function format(value){
+ return Number(value).toFixed(1).replace(/\.0$/,"");
+}
+
+function newId(){
+ if(window.crypto&&crypto.randomUUID){
+  return crypto.randomUUID();
+ }
+ return Date.now()+"-"+Math.random().toString(36).slice(2);
+}
+
+// データ読み込み
 function load(){
  try{
-  const current=localStorage.getItem(KEY);
-  if(current!==null){
-   const data=JSON.parse(current);
-   return Array.isArray(data)?data:[];
+  let raw=localStorage.getItem(KEY);
+
+  if(raw===null){
+   for(const key of OLD_KEYS){
+    raw=localStorage.getItem(key);
+    if(raw!==null)break;
+   }
   }
 
-  // 以前の高校版の記録を引き継ぐ
-  const old=JSON.parse(
-   localStorage.getItem(OLD_KEY)||"[]"
-  );
+  const data=JSON.parse(raw||"[]");
 
-  if(!Array.isArray(old))return [];
+  if(!Array.isArray(data))return [];
 
-  return old.map(r=>({
+  return data.map(r=>({
    ...r,
-   classAvgs:{},
-   gradeAvgs:{}
+   classAvgs:r.classAvgs||{},
+   gradeAvgs:r.gradeAvgs||{}
   }));
+
  }catch{
   return [];
  }
 }
 
+let records=load();
+let editingId=null;
+
+// 保存
 function save(){
  try{
   localStorage.setItem(KEY,JSON.stringify(records));
   return true;
  }catch{
-  alert("保存に失敗しました。");
+  alert("保存できませんでした。");
   return false;
  }
 }
 
-function format(n){
- return Number(n).toFixed(1).replace(/\.0$/,"");
-}
-
-// 科目選択欄
+// 科目チェックボックス
 subjects.forEach(subject=>{
+
  const label=document.createElement("label");
  const check=document.createElement("input");
 
@@ -247,51 +402,71 @@ subjects.forEach(subject=>{
  check.value=subject;
  check.addEventListener("change",renderInputs);
 
- label.append(check,document.createTextNode(subject));
+ label.append(
+  check,
+  document.createTextNode(
+   subject+"（"+getMax(subject)+"点満点）"
+  )
+ );
+
  $("subjects").append(label);
+
 });
 
 function checks(){
  return [...$("subjects").querySelectorAll("input")];
 }
 
-function makeInput(subject,kind,labelText,required){
+// 点数入力欄
+function makeInput(subject,kind,title,required){
+
  const label=document.createElement("label");
- label.textContent=labelText;
+ label.textContent=title;
 
  const input=document.createElement("input");
+
  input.type="number";
- input.min=0;
- input.max=100;
- input.step=kind==="mine"?"1":"0.1";
- input.placeholder=required?"0〜100":"未発表なら空欄";
+ input.min="0";
+ input.max=String(getMax(subject));
+ input.step=required?"1":"0.1";
  input.required=required;
+
+ input.placeholder=required
+  ?"0〜"+getMax(subject)
+  :"未発表なら空欄";
+
  input.dataset.subject=subject;
  input.dataset.kind=kind;
 
  label.append(input);
+
  return label;
 }
 
+// 選択科目の入力欄を表示
 function renderInputs(){
+
  const box=$("scoreInputs");
  const previous={};
 
  box.querySelectorAll("input").forEach(input=>{
-  const key=input.dataset.subject+"|"+input.dataset.kind;
-  previous[key]=input.value;
+  previous[
+   input.dataset.subject+"|"+input.dataset.kind
+  ]=input.value;
  });
 
  box.replaceChildren();
 
  checks().filter(c=>c.checked).forEach(check=>{
+
   const subject=check.value;
 
   const card=document.createElement("div");
   card.className="score-card";
 
   const title=document.createElement("h3");
-  title.textContent=subject;
+  title.textContent=
+   subject+"（"+getMax(subject)+"点満点）";
 
   const grid=document.createElement("div");
   grid.className="score-grid";
@@ -301,8 +476,10 @@ function renderInputs(){
    ["class","クラス平均",false],
    ["grade","学年平均",false]
   ].forEach(([kind,text,required])=>{
+
    const label=makeInput(subject,kind,text,required);
    const input=label.querySelector("input");
+
    const key=subject+"|"+kind;
 
    if(has(previous,key)){
@@ -310,18 +487,23 @@ function renderInputs(){
    }
 
    grid.append(label);
+
   });
 
   card.append(title,grid);
   box.append(card);
+
  });
+
 }
 
+// 全選択
 $("allBtn").onclick=()=>{
  checks().forEach(c=>c.checked=true);
  renderInputs();
 };
 
+// 全解除
 $("noneBtn").onclick=()=>{
  checks().forEach(c=>c.checked=false);
  renderInputs();
@@ -329,34 +511,44 @@ $("noneBtn").onclick=()=>{
 
 $("year").value=new Date().getFullYear();
 
+// 入力値を確認
 function readValue(subject,kind,required){
+
  const input=[...$("scoreInputs").querySelectorAll("input")]
-  .find(i=>i.dataset.subject===subject &&
-           i.dataset.kind===kind);
+  .find(i=>
+   i.dataset.subject===subject &&
+   i.dataset.kind===kind
+  );
 
  if(!input)return {valid:false};
 
- if(input.value.trim()===""){
+ const raw=input.value.trim();
+
+ if(raw===""){
   return {valid:!required,value:null};
  }
 
- const value=Number(input.value);
- const valid=Number.isFinite(value) &&
-  value>=0 && value<=100 &&
-  (kind!=="mine" || Number.isInteger(value)) &&
-  Math.round(value*10)===value*10;
+ const value=Number(raw);
+
+ const valid=
+  Number.isFinite(value)&&
+  value>=0&&
+  value<=getMax(subject)&&
+  (kind!=="mine"||Number.isInteger(value))&&
+  Math.abs(value*10-Math.round(value*10))<0.000001;
 
  return {valid,value};
 }
 
-// 登録・編集
+// テスト登録
 $("form").addEventListener("submit",event=>{
+
  event.preventDefault();
 
  const selected=checks().filter(c=>c.checked);
 
  if(selected.length===0){
-  alert("科目を1つ以上選択してください。");
+  alert("受験した科目を選んでください。");
   return;
  }
 
@@ -365,26 +557,28 @@ $("form").addEventListener("submit",event=>{
  const gradeAvgs={};
 
  for(const check of selected){
+
   const subject=check.value;
 
   const mine=readValue(subject,"mine",true);
-  const classAvg=readValue(subject,"class",false);
-  const gradeAvg=readValue(subject,"grade",false);
+  const cls=readValue(subject,"class",false);
+  const grade=readValue(subject,"grade",false);
 
-  if(!mine.valid||!classAvg.valid||!gradeAvg.valid){
+  if(!mine.valid||!cls.valid||!grade.valid){
    alert(subject+"の点数を確認してください。");
    return;
   }
 
   scores[subject]=mine.value;
 
-  if(classAvg.value!==null){
-   classAvgs[subject]=classAvg.value;
+  if(cls.value!==null){
+   classAvgs[subject]=cls.value;
   }
 
-  if(gradeAvg.value!==null){
-   gradeAvgs[subject]=gradeAvg.value;
+  if(grade.value!==null){
+   gradeAvgs[subject]=grade.value;
   }
+
  }
 
  const year=Number($("year").value);
@@ -395,18 +589,18 @@ $("form").addEventListener("submit",event=>{
  }
 
  const record={
-  id:editingId||crypto.randomUUID(),
+  id:editingId||newId(),
   year,
   term:$("term").value,
-  scores,classAvgs,gradeAvgs
+  scores,
+  classAvgs,
+  gradeAvgs
  };
 
  const previous=records;
 
  if(editingId){
-  records=records.map(r=>
-   r.id===editingId?record:r
-  );
+  records=records.map(r=>r.id===editingId?record:r);
  }else{
   records=[...records,record];
  }
@@ -418,14 +612,17 @@ $("form").addEventListener("submit",event=>{
 
  resetForm();
  render(record.id);
+
 });
 
 // 編集
 function editRecord(id){
+
  const record=records.find(r=>r.id===id);
  if(!record)return;
 
  editingId=id;
+
  $("year").value=record.year;
  $("term").value=record.term;
 
@@ -436,45 +633,55 @@ function editRecord(id){
  renderInputs();
 
  $("scoreInputs").querySelectorAll("input").forEach(input=>{
+
   const subject=input.dataset.subject;
   const kind=input.dataset.kind;
 
   const source=kind==="mine"
    ?record.scores
    :kind==="class"
-    ?record.classAvgs||{}
-    :record.gradeAvgs||{};
+    ?record.classAvgs
+    :record.gradeAvgs;
 
   input.value=has(source,subject)?source[subject]:"";
+
  });
 
- $("formTitle").textContent="📝 成績を編集";
+ $("formTitle").textContent="📝 テストを編集";
  $("saveBtn").textContent="変更を保存";
  $("cancelBtn").classList.remove("hidden");
 
  $("form").scrollIntoView({behavior:"smooth"});
+
 }
 
+// 入力フォーム初期化
 function resetForm(){
+
  editingId=null;
+
  $("form").reset();
  $("year").value=new Date().getFullYear();
 
  checks().forEach(c=>c.checked=false);
+
  renderInputs();
 
  $("formTitle").textContent="テストを登録";
  $("saveBtn").textContent="記録する";
  $("cancelBtn").classList.add("hidden");
+
 }
 
 $("cancelBtn").onclick=resetForm;
 
 // 削除
 function deleteRecord(id){
- if(!confirm("この記録を削除しますか？"))return;
+
+ if(!confirm("このテストの記録を削除しますか？"))return;
 
  const previous=records;
+
  records=records.filter(r=>r.id!==id);
 
  if(!save()){
@@ -483,26 +690,51 @@ function deleteRecord(id){
  }
 
  if(editingId===id)resetForm();
+
  render();
+
 }
 
-// 差の表示
-function difference(mine,avg){
- if(avg===undefined||avg===null)return "未入力";
+// 総合点
+function totals(record){
 
- const diff=Math.round((mine-avg)*10)/10;
+ const names=subjects.filter(s=>has(record.scores,s));
+
+ return {
+  count:names.length,
+  total:names.reduce(
+   (sum,s)=>sum+Number(record.scores[s]),0
+  ),
+  max:names.reduce(
+   (sum,s)=>sum+getMax(s),0
+  )
+ };
+
+}
+
+// 平均点との差
+function difference(mine,average){
+
+ if(average===undefined||average===null){
+  return "未入力";
+ }
+
+ const diff=Math.round((mine-average)*10)/10;
 
  if(diff>0)return "+"+format(diff)+"点";
  if(diff<0)return format(diff)+"点";
+
  return "±0点";
 }
 
-// 棒グラフの1行
-function makeBar(label,value,cssClass){
+// グラフ生成
+function makeBar(label,value,cssClass,max){
+
  const row=document.createElement("div");
  row.className="bar-row";
 
  const text=document.createElement("div");
+
  text.textContent=label+"："+
   (value===undefined||value===null
    ?"未入力":format(value)+"点");
@@ -510,106 +742,215 @@ function makeBar(label,value,cssClass){
  row.append(text);
 
  if(value!==undefined&&value!==null){
+
   const bar=document.createElement("div");
   bar.className="bar";
 
   const fill=document.createElement("div");
   fill.className="fill "+cssClass;
-  fill.style.width=value+"%";
+
+  fill.style.width=
+   Math.max(0,Math.min(100,value/max*100))+"%";
 
   bar.append(fill);
   row.append(bar);
+
  }
 
  return row;
 }
 
-// 比較結果
+// 国語合計を計算
+function japaneseTotal(record){
+
+ const a="文学国語";
+ const b="論理国語";
+
+ // 両方受験していない場合は表示しない
+ if(!has(record.scores,a)||!has(record.scores,b)){
+  return null;
+ }
+
+ const cls=record.classAvgs||{};
+ const grade=record.gradeAvgs||{};
+
+ return {
+
+  mine:
+   Number(record.scores[a])+
+   Number(record.scores[b]),
+
+  classAvg:
+   has(cls,a)&&has(cls,b)
+    ?Number(cls[a])+Number(cls[b])
+    :null,
+
+  gradeAvg:
+   has(grade,a)&&has(grade,b)
+    ?Number(grade[a])+Number(grade[b])
+    :null
+
+ };
+
+}
+
+// 国語合計を表示
+function showJapaneseTotal(record){
+
+ const box=$("japaneseResult");
+ box.replaceChildren();
+
+ const result=japaneseTotal(record);
+
+ if(!result)return;
+
+ const section=document.createElement("section");
+ section.className="japanese-total";
+
+ const title=document.createElement("h3");
+ title.textContent="📘 国語合計（100点満点）";
+
+ const description=document.createElement("p");
+ description.className="muted";
+ description.textContent="文学国語＋論理国語";
+
+ section.append(title,description);
+
+ section.append(
+  makeBar("自分",result.mine,"mine",100),
+  makeBar("クラス平均",result.classAvg,"classavg",100),
+  makeBar("学年平均",result.gradeAvg,"gradeavg",100)
+ );
+
+ const diff=document.createElement("p");
+ diff.className="diff";
+
+ diff.textContent=
+  "クラス平均との差："+difference(result.mine,result.classAvg)+
+  " ／ 学年平均との差："+difference(result.mine,result.gradeAvg);
+
+ section.append(diff);
+
+ box.append(section);
+
+}
+
+// 成績比較
 function showComparison(id){
+
  const box=$("comparison");
  box.replaceChildren();
 
  const record=records.find(r=>r.id===id);
 
  if(!record){
+
   $("total").textContent="—";
-  $("average").textContent="—";
-  $("maxScore").textContent="";
+  $("maxTotal").textContent="";
+  $("percentage").textContent="—";
   $("subjectCount").textContent="";
   $("compareCount").textContent="—";
+
+  $("japaneseResult").replaceChildren();
+
   box.textContent="まだ記録がありません。";
+
   return;
  }
 
- const values=Object.values(record.scores);
- const total=values.reduce((a,b)=>a+b,0);
- const count=values.length;
+ const result=totals(record);
 
- $("total").textContent=total+"点";
- $("maxScore").textContent="/ "+count*100+"点";
- $("average").textContent=format(total/count)+"点";
- $("subjectCount").textContent=count+"科目";
- 
- const classAvgs=record.classAvgs||{};
- const gradeAvgs=record.gradeAvgs||{};
+ $("total").textContent=format(result.total)+"点";
+ $("maxTotal").textContent="/ "+result.max+"点";
+
+ $("percentage").textContent=
+  format(result.total/result.max*100)+"%";
+
+ $("subjectCount").textContent=
+  result.count+"科目を受験";
+
+ const cls=record.classAvgs||{};
+ const grade=record.gradeAvgs||{};
 
  const compared=subjects.filter(s=>
   has(record.scores,s)&&
-  has(classAvgs,s)&&
-  has(gradeAvgs,s)
+  has(cls,s)&&
+  has(grade,s)
  ).length;
 
  $("compareCount").textContent=compared+"科目";
 
+ // 国語合計を先に表示
+ showJapaneseTotal(record);
+
+ // 各科目の比較
  subjects.forEach(subject=>{
+
   if(!has(record.scores,subject))return;
 
-  const mine=record.scores[subject];
-  const cls=classAvgs[subject];
-  const grade=gradeAvgs[subject];
+  const mine=Number(record.scores[subject]);
+  const classAvg=cls[subject];
+  const gradeAvg=grade[subject];
 
   const section=document.createElement("section");
   section.className="compare";
 
   const title=document.createElement("h3");
-  title.textContent=subject;
+
+  title.textContent=
+   subject+"（"+getMax(subject)+"点満点）";
 
   section.append(title);
+
   section.append(
-   makeBar("自分",mine,"mine"),
-   makeBar("クラス平均",cls,"classavg"),
-   makeBar("学年平均",grade,"gradeavg")
+   makeBar("自分",mine,"mine",getMax(subject)),
+   makeBar("クラス平均",classAvg,"classavg",getMax(subject)),
+   makeBar("学年平均",gradeAvg,"gradeavg",getMax(subject))
   );
 
   const diff=document.createElement("p");
+  diff.className="diff";
+
   diff.textContent=
-   "クラス平均との差："+difference(mine,cls)+
-   " / 学年平均との差："+difference(mine,grade);
+   "クラス平均との差："+difference(mine,classAvg)+
+   " ／ 学年平均との差："+difference(mine,gradeAvg);
 
   section.append(diff);
+
   box.append(section);
+
  });
+
 }
 
-// 履歴
+// テスト一覧更新
 function render(selectedId=null){
+
  const select=$("resultSelect");
+
  const previousId=selectedId||select.value;
 
  select.replaceChildren();
 
  records.forEach(r=>{
+
   const option=document.createElement("option");
+
   option.value=r.id;
   option.textContent=r.year+"年度 "+r.term;
+
   select.append(option);
+
  });
 
  const id=records.some(r=>r.id===previousId)
   ?previousId
-  :records.length?records[records.length-1].id:"";
+  :records.length
+   ?records[records.length-1].id
+   :"";
 
  select.value=id;
+
  showComparison(id);
 
  const history=$("history");
@@ -621,19 +962,40 @@ function render(selectedId=null){
  }
 
  [...records].reverse().forEach(r=>{
+
   const div=document.createElement("div");
   div.className="record";
 
   const title=document.createElement("h3");
   title.textContent=r.year+"年度 "+r.term;
 
-  const values=Object.values(r.scores);
-  const total=values.reduce((a,b)=>a+b,0);
+  const result=totals(r);
 
   const detail=document.createElement("p");
+
   detail.textContent=
-   values.length+"科目 / 合計"+total+
-   "点 / 平均"+format(total/values.length)+"点";
+   result.count+"科目 ／ "+
+   format(result.total)+"点 / "+result.max+"点 ／ 得点率"+
+   format(result.total/result.max*100)+"%";
+
+  div.append(title,detail);
+
+  // 国語合計も履歴に表示
+  const japanese=japaneseTotal(r);
+
+  if(japanese){
+
+   const jp=document.createElement("p");
+
+   jp.textContent=
+    "📘 国語合計："+format(japanese.mine)+" / 100点";
+
+   jp.style.color="#2563eb";
+   jp.style.fontWeight="bold";
+
+   div.append(jp);
+
+  }
 
   const actions=document.createElement("div");
   actions.className="actions";
@@ -649,17 +1011,23 @@ function render(selectedId=null){
   del.onclick=()=>deleteRecord(r.id);
 
   actions.append(edit,del);
-  div.append(title,detail,actions);
+
+  div.append(actions);
   history.append(div);
+
  });
+
 }
 
-$("resultSelect").addEventListener("change",e=>{
- showComparison(e.target.value);
+// 表示テスト切り替え
+$("resultSelect").addEventListener("change",event=>{
+ showComparison(event.target.value);
 });
 
+// 初期表示
 renderInputs();
 render();
+
 </script>
 </body>
 </html>
